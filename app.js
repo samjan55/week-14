@@ -88,3 +88,11 @@ taskInput.addEventListener("keydown", function (event) {
         addButton.click();
     }
 });
+const tasks = taskList.querySelectorAll("li span");
+
+for (const task of tasks) {
+    if (task.textContent.toLowerCase() === text.toLowerCase()) {
+        alert("This task already exists!");
+        return;
+    }
+}
