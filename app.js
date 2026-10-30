@@ -82,3 +82,9 @@ const editButton = li.querySelector('[data-action="edit"]');
 li.insertBefore(span, editButton);
 
 });
+// Add task when Enter is pressed
+taskInput.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+        addButton.click();
+    }
+});
