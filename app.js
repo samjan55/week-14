@@ -1,98 +1,111 @@
- const taskList = document.querySelector("#task-list");
+const taskList = document.querySelector("#task-list");
 const taskInput = document.querySelector("#task-input");
 const addButton = document.querySelector("#add-task");
 
 // Add a new task
 addButton.addEventListener("click", function () {
-const text = taskInput.value.trim();
+    const text = taskInput.value.trim();
 
-if (text === "") {
-    return;
-}
+    if (text === "") {
+        return;
+    }
 
-const li = document.createElement("li");
+    // Check for duplicate tasks
+    const tasks = taskList.querySelectorAll("li span");
 
-const span = document.createElement("span");
-span.textContent = text;
-span.dataset.taskText = text;
+    for (const task of tasks) {
+        if (task.textContent.toLowerCase() === text.toLowerCase()) {
+            alert("This task already exists!");
+            return;
+        }
+    }
 
-const editButton = document.createElement("button");
-editButton.textContent = "Edit";
-editButton.dataset.action = "edit";
+    const li = document.createElement("li");
 
-li.append(span, editButton);
-taskList.append(li);
+    const span = document.createElement("span");
+    span.textContent = text;
+    span.dataset.taskText = text;
 
-taskInput.value = "";
+    const editButton = document.createElement("button");
+    editButton.textContent = "Edit";
+    editButton.dataset.action = "edit";
 
+    li.append(span, editButton);
+    taskList.append(li);
+
+    taskInput.value = "";
 });
 
 // Event delegation for Edit button clicks
 taskList.addEventListener("click", function (event) {
-if (event.target.dataset.action !== "edit") {
-return;
-}
+    if (event.target.dataset.action !== "edit") {
+        return;
+    }
 
-const li = event.target.parentElement;
-const span = li.querySelector("span");
+    const li = event.target.parentElement;
+    const span = li.querySelector("span");
 
-if (!span) {
-    return;
-}
+    if (!span) {
+        return;
+    }
 
-const input = document.createElement("input");
-input.type = "text";
-input.value = span.textContent;
-input.dataset.action = "save";
+    const input = document.createElement("input");
+    input.type = "text";
+    input.value = span.textContent;
+    input.dataset.action = "save";
 
-span.remove();
-event.target.before(input);
+    span.remove();
+    event.target.before(input);
 
-input.focus();
-
-});
-
-// Event delegation for saving with Enter
-taskList.addEventListener("keydown", function (event) {
-if (event.key !== "Enter") {
-return;
-}
-
-if (event.target.dataset.action !== "save") {
-    return;
-}
-
-const input = event.target;
-const newText = input.value.trim();
-
-if (newText === "") {
     input.focus();
-    return;
-}
-
-const li = input.parentElement;
-
-const span = document.createElement("span");
-span.textContent = newText;
-span.dataset.taskText = newText;
-
-input.remove();
-
-const editButton = li.querySelector('[data-action="edit"]');
-li.insertBefore(span, editButton);
-
+    input.select();
 });
-// Add task when Enter is pressed
+
+// Save edited task when Enter is pressed
+taskList.addEventListener("keydown", function (event) {
+    if (event.key !== "Enter") {
+        return;
+    }
+
+    if (event.target.dataset.action !== "save") {
+        return;
+    }
+
+    const input = event.target;
+    const newText = input.value.trim();
+
+    if (newText === "") {
+        input.focus();
+        return;
+    }
+
+    const li = input.parentElement;
+    const tasks = taskList.querySelectorAll("li span");
+
+    for (const task of tasks) {
+        if (
+            task.parentElement !== li &&
+            task.textContent.toLowerCase() === newText.toLowerCase()
+        ) {
+            alert("This task already exists!");
+            input.focus();
+            return;
+        }
+    }
+
+    const span = document.createElement("span");
+    span.textContent = newText;
+    span.dataset.taskText = newText;
+
+    input.remove();
+
+    const editButton = li.querySelector('[data-action="edit"]');
+    li.insertBefore(span, editButton);
+});
+
+// Add a task when Enter is pressed in the main input
 taskInput.addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
         addButton.click();
     }
 });
-const tasks = taskList.querySelectorAll("li span");
-
-for (const task of tasks) {
-    if (task.textContent.toLowerCase() === text.toLowerCase()) {
-        alert("This task already exists!");
-        return;
-    }
-}
